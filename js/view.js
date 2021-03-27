@@ -1,15 +1,20 @@
 import AddTodo from './components/add-todo.js';
 import Modal from './components/modal.js';
 import Filters from './components/filters.js';
+import Alert from './components/alert.js';
 
 export default class View {
     constructor() {
         this.model = null;
+        this.nrows = 0;
+
         this.table = document.getElementById('table');
         this.addTodoForm = new AddTodo();
         this.modal = new Modal();
-        this.filters = new Filters;
+        this.filters = new Filters();
 
+        //Components
+        this.alert = new Alert('alert-empty')
         this.addTodoForm.onClick((title, description) => this.addTodo(title, description));
         this.modal.onClick((id, values) => this.editTodo(id, values));
         this.filters.onClick((filters => this.filter(filters)));
@@ -17,11 +22,19 @@ export default class View {
 
     setModel(model) {
         this.model = model;
+        this.nrows = this.model.getTodos().length
     }
 
     render() {
         const todos = this.model.getTodos();
-        todos.forEach(todo => this.createRow(todo));
+        if (this.nrows < 1) {
+            this.table.classList.add('d-none')
+            this.alert.show('There is no todos to show')
+        } else {
+            this.table.classList.remove('d-none')
+            todos.forEach(todo => this.createRow(todo));
+        }
+
     }
 
     filter(filters) {
@@ -65,13 +78,20 @@ export default class View {
 
     addTodo(title, description) {
         const todo = this.model.addTodo(title, description);
+        this.table.classList.remove('d-none')
         this.createRow(todo);
+        this.nrows++;
 
     }
 
     removeTodo(id) {
         this.model.removeTodo(id);
         document.getElementById(id).remove();
+        this.nrows--
+        if (this.nrows < 1) {
+            this.table.classList.add('d-none')
+            this.alert.show('There is no todos to show')
+        }
     }
 
     createRow(todo) {

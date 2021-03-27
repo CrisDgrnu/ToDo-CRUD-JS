@@ -6,15 +6,17 @@ export default class AddTodo {
         this.title = document.getElementById('title');
         this.description = document.getElementById('description');
 
-        this.alert = new Alert('alert');
+        this.alertError = new Alert('alert-error');
+        this.alertEmpty = new Alert('alert-empty');
     }
 
     onClick(callback) {
         this.btn.onclick = () => {
             if (!this.title.value || !this.description.value) {
-                this.alert.show('Title and description are required');
+                this.alertError.show('Title and description are required');
             } else {
-                this.alert.hide();
+                this.alertError.hide();
+                this.alertEmpty.hide();
                 callback(this.title.value,this.description.value);
             }
         }
